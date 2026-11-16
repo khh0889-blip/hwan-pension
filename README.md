@@ -1,6 +1,6 @@
 # 연금 허브 (PWA)
 
-연금저축 · IRP 통합 계산기 — 단일 HTML 오프라인 앱.
+연금저축 · IRP · DC형 통합 계산기 — 단일 HTML 오프라인 앱.
 
 ## 구성
 - `index.html` — 앱 전체(HTML/CSS/JS 인라인, 외부 요청 0건). 저장 키 `hwanPension.v1`
