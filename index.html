@@ -937,6 +937,108 @@ function defaultState(){
   };
 }
 
+/* ---------- 상태 정규화 ----------
+   저장값 복원(load)과 JSON 백업 불러오기(importJSON)가 같은 규칙을 쓰도록 한 곳에 모은다.
+   계좌 구분(p1/irp/dc)·종목 필드·DC 비율·시뮬레이터·세액공제·테마·매수 이력을 모두 보존하고,
+   예전/다른 이름으로 저장된 백업(units·avgPrice·currentPrice·buyAmount·evalAmount·basePrice,
+   dcRatios)도 같은 값으로 읽어 들인다. 모르는 필드는 지우지 않고 그대로 남긴다. */
+const ACCT_ALIAS = {p1:'p1', pension:'p1', savings:'p1', 연금저축:'p1', irp:'irp', dc:'dc', dc형:'dc', 퇴직연금:'dc', 퇴직연금dc형:'dc', 퇴직연금dc:'dc'};
+function acctOf(v){
+  const k = String(v == null ? '' : v).toLowerCase().replace(/[\s_-]/g, '');
+  return ACCT_ALIAS[k] || null;
+}
+function pickVal(){
+  for (let i = 0; i < arguments.length; i++) {
+    const v = arguments[i];
+    if (v === null || v === undefined || v === '') continue;
+    return v;
+  }
+  return null;
+}
+function numOf(v, dflt){
+  if (v === null || v === undefined || v === '') return dflt;
+  const n = +String(v).replace(/[,\s원]/g, '');
+  return Number.isFinite(n) ? n : dflt;
+}
+function dcRatioMap(dcRatios){
+  const m = {};
+  if (Array.isArray(dcRatios)) {
+    dcRatios.forEach(r => {
+      if (!r || typeof r !== 'object') return;
+      const k = String(pickVal(r.id, r.name, r.key) || '');
+      if (k) m[k] = numOf(r.ratio, 0);
+    });
+  } else if (dcRatios && typeof dcRatios === 'object') {
+    Object.keys(dcRatios).forEach(k => { m[String(k)] = numOf(dcRatios[k], 0); });
+  }
+  return m;
+}
+function normHolding(raw, ratios){
+  const h = (raw && typeof raw === 'object') ? raw : {};
+  const id = String(pickVal(h.id, h.hId) || ('h' + Math.random().toString(36).slice(2,8)));
+  const acct = acctOf(pickVal(h.acct, h.account, h.acctType, h.accountType)) || 'p1';
+  const cat = CAT[h.cat] ? h.cat : (CAT[h.category] ? h.category : 'ndx');
+  const kindRaw = String(pickVal(h.kind, h.type) || '').toLowerCase();
+  const kind = (kindRaw === 'fund' || kindRaw === '펀드') ? 'fund'
+             : (kindRaw === 'etf') ? 'etf'
+             : (acct === 'dc' ? 'fund' : 'etf');
+  const name = String(pickVal(h.name, h.title) || '종목');
+  const qty = numOf(pickVal(h.qty, h.units, h.quantity, h.shares), 0);
+  const avg = numOf(pickVal(h.avg, h.avgPrice, h.averagePrice), 0);
+  const price = numOf(pickVal(h.price, h.currentPrice, h.nowPrice), 0);
+  const buyIn = pickVal(h.buy, h.buyAmount, h.purchaseAmount, h.invested);
+  const evalIn = pickVal(h.eval, h.evalAmount, h.evaluationAmount, h.value);
+  const retIn = pickVal(h.ret, h.expectedReturn);
+  const divIn = pickVal(h.div, h.dividend);
+  const ratioIn = pickVal(h.ratio, h.dcRatio, h.autoRatio) != null
+    ? numOf(pickVal(h.ratio, h.dcRatio, h.autoRatio), 0)
+    : (numOf(ratios[id], numOf(ratios[name], 0)));
+  const evBaseIn = pickVal(h.evBase, h.baseEval);
+  /* Object.assign 으로 원본을 먼저 깔아 두고, 앱이 쓰는 필드만 정규화해 덮어쓴다. */
+  return Object.assign({}, h, {
+    id: id,
+    acct: acct,
+    cat: cat,
+    kind: kind,
+    name: name,
+    qty: qty, avg: avg, price: price,
+    buy: buyIn == null ? r0(qty * avg) : numOf(buyIn, 0),
+    eval: evalIn == null ? r0(qty * price) : numOf(evalIn, 0),
+    ret: retIn == null ? (BASE_RET[cat] || 9) : numOf(retIn, 0),
+    div: divIn == null ? (BASE_DIV[cat] || 0) : numOf(divIn, 0),
+    ratio: ratioIn,
+    monthly: numOf(h.monthly, 0),
+    /* 시세 자동 반영 기준(평가액 ↔ 종가) — 저장값이 있으면 그대로 이어 쓴다. */
+    pxBase: numOf(pickVal(h.pxBase, h.basePrice), 0),
+    evBase: evBaseIn == null ? null : numOf(evBaseIn, null)
+  });
+}
+function normalizeState(raw){
+  const s = (raw && typeof raw === 'object' && raw.state && typeof raw.state === 'object') ? raw.state : raw;
+  if (!s || typeof s !== 'object' || !Array.isArray(s.holdings) || !s.holdings.length) return null;
+  const d = defaultState();
+  const out = Object.assign({}, d, s);
+  out.v = 2;
+  out.theme = (s.theme === 'dark') ? 'dark' : 'light';
+  out.tab = String(pickVal(s.tab, d.tab));
+  out.sim = Object.assign({}, d.sim, (s.sim && typeof s.sim === 'object') ? s.sim : {});
+  ['age','retireAge','infl','target','taxRate','dcMonthly'].forEach(k => { out.sim[k] = numOf(out.sim[k], d.sim[k]); });
+  out.sim.real = !!out.sim.real;
+  out.pen = Object.assign({}, d.pen, (s.pen && typeof s.pen === 'object') ? s.pen : {});
+  out.pen.wret = numOf(out.pen.wret, d.pen.wret);
+  out.pen.living = numOf(out.pen.living, d.pen.living);
+  out.pen.band = String(pickVal(out.pen.band, d.pen.band));
+  const ov = numOf(out.pen.override, 0);
+  out.pen.override = ov > 0 ? ov : null;
+  out.tax = Object.assign({}, d.tax, (s.tax && typeof s.tax === 'object') ? s.tax : {});
+  out.tax.year = numOf(out.tax.year, d.tax.year);
+  if (!out.tax.data || typeof out.tax.data !== 'object' || Array.isArray(out.tax.data)) out.tax.data = {};
+  out.buys = Array.isArray(s.buys) ? s.buys.slice() : (Array.isArray(s.history) ? s.history.slice() : []);
+  const ratios = dcRatioMap(s.dcRatios);
+  out.holdings = s.holdings.map(h => normHolding(h, ratios));
+  return out;
+}
+
 let state = defaultState();
 let STORAGE_OK = true;
 
@@ -946,31 +1048,8 @@ function load(){
     if (!raw) return;
     const parsed = JSON.parse(raw);
     if (!parsed || (parsed.v || 1) < 2) return;
-    if (!Array.isArray(parsed.holdings) || !parsed.holdings.length) return;
-    const d = defaultState();
-    state = Object.assign(d, parsed);
-    state.sim = Object.assign(d.sim, parsed.sim || {});
-    state.pen = Object.assign(d.pen, parsed.pen || {});
-    state.tax = Object.assign(d.tax, parsed.tax || {});
-    if (!state.tax.data || typeof state.tax.data !== 'object') state.tax.data = {};
-    state.holdings = parsed.holdings.map(h => ({
-      id: h.id || ('h' + Math.random().toString(36).slice(2,8)),
-      acct: ACCT[h.acct] ? h.acct : 'p1',
-      cat: CAT[h.cat] ? h.cat : 'ndx',
-      kind: h.kind === 'fund' ? 'fund' : 'etf',
-      name: String(h.name || '종목'),
-      qty: +h.qty || 0, avg: +h.avg || 0, price: +h.price || 0,
-      buy: h.buy == null ? r0((+h.qty||0) * (+h.avg||0)) : +h.buy,
-      eval: h.eval == null ? r0((+h.qty||0) * (+h.price||0)) : +h.eval,
-      ret: h.ret == null ? (BASE_RET[h.cat] || 9) : +h.ret,
-      div: h.div == null ? (BASE_DIV[h.cat] || 0) : +h.div,
-      ratio: +h.ratio || 0,
-      monthly: +h.monthly || 0,
-      /* 시세 자동 반영 기준(평가액 ↔ 종가) — 저장값이 있으면 그대로 이어 쓴다. */
-      pxBase: +h.pxBase || 0,
-      evBase: h.evBase == null ? null : +h.evBase
-    }));
-    state.buys = Array.isArray(parsed.buys) ? parsed.buys : [];
+    const next = normalizeState(parsed);
+    if (next) state = next;
   } catch(e) { /* 손상된 저장값은 무시하고 기본값으로 시작 */ }
 }
 
@@ -2141,7 +2220,7 @@ function bindChart(){
 /* ================= 백업 ================= */
 function exportJSON(){
   try {
-    const payload = {app: 'hwan-pension', version: 1, exportedAt: new Date().toISOString(), state: state};
+    const payload = {app: 'hwan-pension', version: 2, exportedAt: new Date().toISOString(), state: state};
     const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -2161,29 +2240,14 @@ function importJSON(e){
   reader.onload = () => {
     try {
       const obj = JSON.parse(String(reader.result));
-      const s = obj && obj.state ? obj.state : obj;
-      if (!s || !Array.isArray(s.holdings) || !s.holdings.length) throw new Error('bad');
-      const d = defaultState();
-      state = Object.assign(d, s);
-      state.sim = Object.assign(d.sim, s.sim || {});
-      state.pen = Object.assign(d.pen, s.pen || {});
-      state.tax = Object.assign(d.tax, s.tax || {});
-      state.holdings = s.holdings.map(h => ({
-        id: h.id || ('h' + Math.random().toString(36).slice(2,8)),
-        acct: h.acct === 'irp' ? 'irp' : 'p1',
-        cat: CAT[h.cat] ? h.cat : 'ndx',
-        name: String(h.name || '종목'),
-        qty: +h.qty || 0, avg: +h.avg || 0, price: +h.price || 0,
-        buy: h.buy == null ? r0((+h.qty||0) * (+h.avg||0)) : +h.buy,
-        eval: h.eval == null ? r0((+h.qty||0) * (+h.price||0)) : +h.eval,
-        ret: h.ret == null ? 9 : +h.ret,
-        div: h.div == null ? 0 : +h.div,
-        monthly: +h.monthly || 0
-      }));
-      state.buys = Array.isArray(s.buys) ? s.buys : [];
+      const next = normalizeState(obj);
+      if (!next) throw new Error('bad');
+      state = next;
       setTheme(state.theme);
       renderAll(); switchTab(state.tab || 1); save();
-      toast('백업을 불러왔어요');
+      const n = {p1: 0, irp: 0, dc: 0};
+      state.holdings.forEach(h => { n[h.acct] = (n[h.acct] || 0) + 1; });
+      toast('백업을 불러왔어요 · ' + n.p1 + '·' + n.irp + '·' + n.dc + '종목');
     } catch(err) {
       toast('백업 파일을 읽을 수 없어요');
     }
