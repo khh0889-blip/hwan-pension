@@ -65,6 +65,20 @@ b,strong{font-weight:900}
 .logo svg{width:23px;height:23px}
 .brand h1{font-size:18.5px;font-weight:900;letter-spacing:-.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand p{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ============ 시세 바 ============ */
+.quoteBar{max-width:1180px;margin:0 auto;padding:8px 13px 0}
+.qbIn{display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow)}
+.qDot{width:8px;height:8px;flex:none;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--upSoft)}
+.qDot.off{background:var(--warn);box-shadow:0 0 0 3px var(--warnSoft)}
+.qDot.wait{background:var(--accent);box-shadow:0 0 0 3px var(--accentSoft)}
+.qText{flex:1;min-width:0;font-size:12.5px;font-weight:900;letter-spacing:-.25px;line-height:1.35}
+.qText small{font-weight:700;color:var(--muted);font-size:11.5px}
+.qBtn{flex:none;display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:10px;background:var(--accentSoft);color:var(--accent);font-size:12px;font-weight:900;letter-spacing:-.2px}
+.qBtn:disabled{opacity:.55}
+.qBtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.qBtn.spin svg{animation:qspin .9s linear infinite}
+@keyframes qspin{to{transform:rotate(360deg)}}
 .iconBtn{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line);color:var(--text)}
 .iconBtn svg{width:19px;height:19px}
 .wrap{max-width:1180px;margin:0 auto;padding:0 13px calc(var(--tabh) + 18px)}
@@ -440,6 +454,16 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
   </div>
 </header>
 
+<div class="quoteBar">
+  <div class="qbIn">
+    <span class="qDot" id="quoteDot"></span>
+    <div class="qText" id="quoteText">시세 기준: <b>2026-11-16</b> (장마감) <small>· 상장 ETF 종가 자동 반영</small></div>
+    <button class="qBtn" id="btnQuote" type="button" aria-label="시세 새로고침">
+      <svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.7 4.4v4.9h-4.9"/></svg><span>시세 새로고침</span>
+    </button>
+  </div>
+</div>
+
 <div class="wrap">
   <nav class="tabnav" id="tabnav" aria-label="화면 전환">
     <button data-tab="1" class="on" type="button">
@@ -711,7 +735,7 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
         <div class="secHead"><h2>앱 정보</h2></div>
         <ul class="infoList">
           <li>저장 키 <b>hwanPension.v1</b> · 브라우저 로컬 저장소에만 남습니다.</li>
-          <li>인터넷 없이 동작합니다. 외부 요청은 한 건도 없어요.</li>
+          <li>인터넷이 연결되면 평일 장 마감 종가를 <b>prices.json</b> 한 파일만 받아와 상장 ETF 현재가·평가액을 자동 갱신합니다. 연결이 없으면 마지막 저장값으로 조용히 계산해요.</li>
           <li>폰 홈 화면에 추가하면 앱처럼 전체 화면으로 열립니다. (Chrome: 우측 상단 ⋮ → 홈 화면에 추가)</li>
           <li>Z 폴드7 펼침 화면에서는 2단, 접은 화면에서는 1단으로 자동 정리됩니다.</li>
           <li>종목·수량·기대수익률·적립금을 고치면 모든 계산이 바로 다시 됩니다.</li>
@@ -731,9 +755,13 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
 
 /* ============================================================
    연금 허브 — 오프라인 단일 파일 앱
-   저장: localStorage['hwanPension.v1'] · 외부 요청 없음
+   저장: localStorage['hwanPension.v1'] · 바깥에서 받아오는 건 시세 파일(prices.json) 하나뿐
    ============================================================ */
 const KEY = 'hwanPension.v1';
+/* 시세: 평일 장 마감 뒤 scripts/update_pension_prices.py 가 만든 prices.json 을 읽는다. */
+const PRICE_URL = './prices.json';
+const PRICE_CACHE_KEY = 'hwanPension.prices.v1';
+const BASE_QUOTE_DATE = '2026-11-16';
 
 const CATS = [
   {id:'ndx',  name:'나스닥·지수',      color:'#3B5BDB'},
@@ -937,7 +965,10 @@ function load(){
       ret: h.ret == null ? (BASE_RET[h.cat] || 9) : +h.ret,
       div: h.div == null ? (BASE_DIV[h.cat] || 0) : +h.div,
       ratio: +h.ratio || 0,
-      monthly: +h.monthly || 0
+      monthly: +h.monthly || 0,
+      /* 시세 자동 반영 기준(평가액 ↔ 종가) — 저장값이 있으면 그대로 이어 쓴다. */
+      pxBase: +h.pxBase || 0,
+      evBase: h.evBase == null ? null : +h.evBase
     }));
     state.buys = Array.isArray(parsed.buys) ? parsed.buys : [];
   } catch(e) { /* 손상된 저장값은 무시하고 기본값으로 시작 */ }
@@ -1093,6 +1124,143 @@ function switchTab(n){
 }
 
 /* ================= TAB 1 : 보유 현황 ================= */
+/* ---------- 시세 (prices.json) ---------- */
+/* 원칙: 사용자가 저장한 수량·매수기록·DC 비율·시뮬레이션 설정은 건드리지 않고,
+   상장 ETF 의 현재가(price)와 그에 따른 평가금액(eval)만 최신 종가로 맞춘다.
+   - 연금저축·IRP ETF: 수량 × 최신 종가
+   - DC형 상장 ETF(수량 없음): 기준일 종가 대비 등락률만큼 평가액을 비례 갱신 */
+let QUOTE = {items: {}, asOf: '', phase: '', base: {}, baseDate: '', source: '', online: null, busy: false, loadedAt: 0};
+
+function normName(s){
+  return String(s == null ? '' : s).toLowerCase()
+    .replace(/\(dc\)/g, '')
+    .replace(/[\s·._\-\[\]()]/g, '');
+}
+function quoteMap(items){
+  const m = {};
+  (items || []).forEach(function(it){
+    if (it && it.name && +it.price > 0) m[normName(it.name)] = it;
+  });
+  return m;
+}
+function quoteFor(name){
+  const k = normName(name);
+  return QUOTE.items[k] || null;
+}
+function quotePrice(name){
+  const q = quoteFor(name);
+  return q ? (+q.price || 0) : 0;
+}
+
+function applyQuotes(data){
+  if (!data || !data.asOf || !Array.isArray(data.items)) return 0;
+  const asOf = String(data.asOf);
+  /* 더 오래된 시세로는 되돌리지 않는다. */
+  if (QUOTE.asOf && asOf < QUOTE.asOf) return 0;
+  const map = quoteMap(data.items);
+  const base = data.base || {};
+  let changed = 0;
+  state.holdings.forEach(function(h){
+    const q = map[normName(h.name)];
+    if (!q) return;
+    const px = +q.price || 0;
+    if (!(px > 0)) return;
+    if (h.kind !== 'fund' && h.acct !== 'dc' && +h.qty > 0) {
+      const ev = r0(+h.qty * px);
+      if (+h.price !== px || +h.eval !== ev) changed++;
+      h.price = px;
+      h.eval = ev;
+      return;
+    }
+    const bp = (+h.pxBase > 0) ? +h.pxBase : (+base[q.code] || 0);
+    const be = (h.evBase != null) ? +h.evBase : +h.eval;
+    if (!(bp > 0 && be > 0)) return;
+    const ev = r0(be * px / bp);
+    if (+h.eval !== ev) changed++;
+    h.eval = ev;
+    h.pxBase = bp;
+    h.evBase = be;
+  });
+  QUOTE.items = map;
+  QUOTE.asOf = asOf;
+  QUOTE.phase = data.phase || '';
+  QUOTE.base = base;
+  QUOTE.baseDate = data.baseDate || '';
+  QUOTE.source = data.source || '';
+  QUOTE.loadedAt = Date.now();
+  return changed;
+}
+
+function saveQuoteCache(){
+  try {
+    localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify({
+      asOf: QUOTE.asOf, phase: QUOTE.phase, baseDate: QUOTE.baseDate, base: QUOTE.base,
+      items: Object.keys(QUOTE.items).map(function(k){ return QUOTE.items[k]; }), ts: Date.now()
+    }));
+  } catch(e) {}
+}
+function restoreQuoteCache(){
+  try {
+    const raw = localStorage.getItem(PRICE_CACHE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (!d || !d.asOf || !Array.isArray(d.items)) return;
+    QUOTE.items = quoteMap(d.items);
+    QUOTE.asOf = String(d.asOf);
+    QUOTE.phase = d.phase || '';
+    QUOTE.base = d.base || {};
+    QUOTE.baseDate = d.baseDate || '';
+    QUOTE.fromCache = true;
+  } catch(e) {}
+}
+
+function renderQuote(){
+  const txt = $('quoteText'), dot = $('quoteDot'), btn = $('btnQuote');
+  if (!txt) return;
+  const asOf = QUOTE.asOf || BASE_QUOTE_DATE;
+  const ph = QUOTE.phase || '장마감';
+  let tail;
+  if (QUOTE.busy) tail = '· 시세 받는 중…';
+  else if (QUOTE.online === false) tail = '· 오프라인 · 마지막 저장값으로 계산';
+  else if (QUOTE.online === true) tail = '· 상장 ETF 종가 자동 반영';
+  else tail = '· 연결되면 종가 자동 반영';
+  txt.innerHTML = '시세 기준: <b>' + esc(asOf) + '</b> (' + esc(ph) + ') <small>' + esc(tail) + '</small>';
+  if (dot) dot.className = 'qDot' + (QUOTE.busy ? ' wait' : (QUOTE.online === false ? ' off' : ''));
+  if (btn) { btn.disabled = !!QUOTE.busy; btn.classList.toggle('spin', !!QUOTE.busy); }
+  const hint = $('asOfHint');
+  if (hint) hint.textContent = asOf + ' 기준';
+}
+
+function fetchQuotes(manual){
+  if (QUOTE.busy) return Promise.resolve(false);
+  QUOTE.busy = true;
+  renderQuote();
+  let timer = null;
+  const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  if (ctrl) timer = setTimeout(function(){ try { ctrl.abort(); } catch(e) {} }, 7000);
+  return fetch(PRICE_URL + '?t=' + Date.now(), {cache: 'no-store', signal: ctrl ? ctrl.signal : undefined})
+    .then(function(res){ if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+    .then(function(data){
+      const changed = applyQuotes(data);
+      QUOTE.online = true;
+      QUOTE.busy = false;
+      if (timer) clearTimeout(timer);
+      saveQuoteCache();
+      if (changed) { renderAll(); save(); }
+      renderQuote();
+      if (manual) toast(changed ? '시세 ' + QUOTE.asOf + ' 종가로 반영했어요' : '이미 최신 시세예요 (' + QUOTE.asOf + ')');
+      return true;
+    })
+    .catch(function(){
+      if (timer) clearTimeout(timer);
+      QUOTE.online = false;
+      QUOTE.busy = false;
+      renderQuote();
+      if (manual) toast('시세를 못 받아왔어요 · 마지막 저장값으로 계산합니다');
+      return false;
+    });
+}
+
 function renderTop(){
   const t = totals();
   $('totalEval').innerHTML = fmt(t.ev) + '<small>원</small>';
@@ -1281,7 +1449,15 @@ function openEditModal(h){
       monthly: isNew ? 0 : cur.monthly
     };
     if (isNew) state.holdings.push(target);
-    else Object.assign(cur, target);
+    else {
+      Object.assign(cur, target);
+      /* DC·펀드 평가액을 직접 고쳤으면 그 값을 새 기준으로 삼는다. */
+      if (fund) {
+        cur.evBase = ev;
+        cur.pxBase = quotePrice(cur.name) || 0;
+        if (!cur.pxBase) cur.evBase = null;
+      }
+    }
     closeModal();
     renderAll();
     save();
@@ -1387,6 +1563,7 @@ function openDepositModal(h){
     if (amt <= 0) { toast('금액을 확인해 주세요'); return; }
     h.buy += amt;
     h.eval += amt;
+    if (h.evBase != null) h.evBase = +h.evBase + amt;
     state.buys.push({
       id: 'b' + Date.now().toString(36), ts: Date.now(),
       date: $('dDate').value || new Date().toISOString().slice(0,10),
@@ -2025,6 +2202,7 @@ function renderAll(){
   renderSimOut();
   renderPen();
   renderTax();
+  renderQuote();
 }
 
 load();
@@ -2033,13 +2211,28 @@ bind();
 renderAll();
 switchTab(state.tab || 1);
 
+/* ---------- 시세 부트스트랩 ---------- */
+restoreQuoteCache();
+renderQuote();
+if ($('btnQuote')) $('btnQuote').addEventListener('click', function(){ fetchQuotes(true); });
+if (typeof navigator === 'undefined' || navigator.onLine !== false) fetchQuotes(false);
+window.addEventListener('online', function(){ fetchQuotes(true); });
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden) return;
+  if (Date.now() - (QUOTE.loadedAt || 0) > 600000) fetchQuotes(false);
+});
+
 /* 테스트·검증용 (화면에는 보이지 않음) */
 window.__hwanPension = {
   get state(){ return state; },
   totals: totals,
   computeSim: computeSim,
   payout: payout,
-  render: renderAll
+  render: renderAll,
+  fetchQuotes: fetchQuotes,
+  applyQuotes: applyQuotes,
+  normName: normName,
+  get quote(){ return QUOTE; }
 };
 })();
 </script>
