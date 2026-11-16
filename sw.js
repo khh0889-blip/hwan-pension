@@ -1,6 +1,6 @@
 /* 연금 허브 캐시 — 셸은 네트워크 우선으로 새 버전을 바로 받고,
    시세 파일(prices.json)은 항상 네트워크에서 먼저 받아온다. 외부 요청은 하지 않습니다. */
-const CACHE = 'hwan-pension-v3';
+const CACHE = 'hwan-pension-v4';
 const ASSETS = [
   './',
   './index.html',

@@ -238,6 +238,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .groupHead{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;color:var(--muted);letter-spacing:-.1px;margin:4px 2px 0}
 .groupHead em{font-style:normal;font-size:10px;font-weight:800;color:var(--muted);opacity:.7}
 .groupHead b{margin-left:auto;font-size:11px;color:var(--text);font-variant-numeric:tabular-nums}
+.groupHead .btn{padding:3px 8px;font-size:10.5px;font-weight:900;border-radius:8px;letter-spacing:-.2px}
 .groupNote{grid-column:1/-1;font-size:10px;font-weight:700;color:var(--muted);background:var(--card2);border-radius:8px;padding:6px 8px;line-height:1.45;margin-top:2px}
 .emptyBox{font-size:11.5px;font-weight:700;line-height:1.5;color:var(--muted);background:var(--card2);border-radius:11px;padding:11px 12px;text-align:center;list-style:none}
 .emptyBox b{color:var(--accent)}
@@ -286,7 +287,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .allocQuick{display:flex;gap:5px;flex-wrap:wrap}
 .allocQuick .btn{flex:1 1 calc(33.333% - 4px);min-width:0;font-size:11.5px;padding:7px 4px;letter-spacing:-.3px}
 .allocList{display:grid;gap:5px;margin-top:11px}
-.allocRow{display:grid;grid-template-columns:minmax(0,1fr) 78px 52px;gap:6px;align-items:center}
+.allocRow{display:grid;grid-template-columns:minmax(0,1fr) 72px 42px 22px;gap:5px;align-items:center}
 .allocRow .an{font-size:12px;font-weight:800;letter-spacing:-.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .allocRow .an i{font-style:normal;color:var(--muted);font-size:10.5px;font-weight:800;margin-left:3px}
 .allocRow .inp{padding:7px 7px;font-size:12.5px;text-align:right;border-radius:8px}
@@ -294,13 +295,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .allocSum{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;padding-top:10px;border-top:1px solid var(--line)}
 .dcBlock{margin-top:13px;padding:12px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
 .dcScroll{max-height:228px;overflow:auto;display:grid;gap:5px;padding-right:2px}
-.dcRow{display:grid;grid-template-columns:minmax(0,1fr) 52px 74px;gap:6px;align-items:center}
+.dcRow{display:grid;grid-template-columns:minmax(0,1fr) 46px 62px 22px;gap:5px;align-items:center}
 .dcRow .an{font-size:11.5px;font-weight:800;letter-spacing:-.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dcRow .an i{font-style:normal;font-size:9px;margin-right:2px}
 .dcRow .inp{padding:6px 6px;font-size:12px;text-align:right;border-radius:8px}
 .dcRow .ash{font-size:10.5px;font-weight:900;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .dcHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .dcHead h3{font-size:12.5px;font-weight:900;letter-spacing:-.3px;flex:1}
+.rowX{width:22px;height:22px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:7px;background:var(--card3);color:var(--muted);font-size:14px;font-weight:900;line-height:1;border:1px solid transparent;flex:none}
+.rowX:active{transform:scale(.94)}
+.rowX:hover{color:var(--down);background:var(--downSoft)}
+.addRow{display:flex;gap:5px;align-items:center;margin-top:7px}
+.addRow select{flex:1;min-width:0;font-size:11.5px;font-weight:800;padding:8px 6px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--text);letter-spacing:-.2px}
+.addRow .btn{flex:none;font-size:11.5px;padding:8px 9px;letter-spacing:-.2px}
+.addHint{font-size:10.5px;font-weight:800;color:var(--muted);margin-top:5px;letter-spacing:-.1px}
+.dcSumRow{display:flex;align-items:center;gap:6px;margin-top:8px}
+.dcSum{font-size:10.5px;font-weight:900;padding:4px 8px;border-radius:8px;background:var(--card3);color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.dcSum.ok{background:var(--upSoft);color:var(--up)}
+.dcSum.warn{background:var(--warnSoft);color:var(--warn)}
+.dcSumRow .btn{font-size:10.5px;padding:4px 8px;border-radius:8px;font-weight:900;letter-spacing:-.2px}
 .allocSum>div{flex:1;min-width:88px}
 .allocSum span{display:block;font-size:10.5px;font-weight:800;color:var(--muted)}
 .allocSum b{display:block;font-size:13px;font-weight:900;letter-spacing:-.4px;margin-top:1px}
@@ -582,6 +595,11 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
         </div>
       </div>
       <div class="allocList" id="allocList"></div>
+      <div class="addRow">
+        <select id="allocAddSel" aria-label="월 적립 종목 추가"></select>
+        <button class="btn sm primary" id="allocAddBtn" type="button">＋ 추가</button>
+      </div>
+      <div class="addHint" id="allocAddHint"></div>
 
       <div class="dcBlock">
         <div class="dcHead"><h3>DC 회사납입금</h3><span class="hint">회사가 넣어주는 돈</span></div>
@@ -589,6 +607,14 @@ select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50
           <div class="amtRow"><input class="inp num" id="dcMonthly" inputmode="numeric"><span class="unit">원</span><span class="hint" id="dcMonthlyHint"></span></div>
         </div>
         <div class="allocList" id="dcRatioList" style="margin-top:9px"></div>
+        <div class="addRow">
+          <select id="dcAddSel" aria-label="DC 자동매수 종목 추가"></select>
+          <button class="btn sm primary" id="dcAddBtn" type="button">＋ 추가</button>
+        </div>
+        <div class="dcSumRow">
+          <span class="dcSum" id="dcSumBadge">합계 0%</span>
+          <button class="btn sm ghost" id="dcFixBtn" type="button" style="display:none">100%로 맞추기</button>
+        </div>
         <p class="hint" id="dcHint" style="margin-top:7px"></p>
       </div>
 
@@ -1131,7 +1157,7 @@ function computeSim(){
   const realAsset = asset / Math.pow(1 + infl, years);
   const byAcct = monthlyByAcct();
   const p1Ann = byAcct.p1 * 12, irpAnn = byAcct.irp * 12;
-  const dcMonth = (state.holdings.filter(h => h.acct === 'dc').length ? (+s.dcMonthly || 0) : 0);
+  const dcMonth = (state.holdings.filter(h => h.acct === 'dc' && (+h.ratio || 0) > 0).length ? (+s.dcMonthly || 0) : 0);
   const personal = byAcct.p1 + byAcct.irp;
   const cap = 9000000, p1Cap = Math.min(p1Ann, 6000000);
   const irpCap = Math.min(irpAnn, Math.max(0, cap - p1Cap));
@@ -1401,7 +1427,8 @@ function renderHoldings(){
     const hs = state.holdings.filter(h => h.acct === acct);
     const fix = ACCT_FIX[acct] || {ev: 0};
     const sum = hs.reduce((a,h) => a + h.eval, 0) + fix.ev;
-    html += '<div class="groupHead"><span>' + ACCT[acct] + ' <em>' + hs.length + '</em></span><b class="num">' + won(sum) + '</b></div>';
+    html += '<div class="groupHead"><span>' + ACCT[acct] + ' <em>' + hs.length + '</em></span><b class="num">' + won(sum) + '</b>' +
+      '<button class="btn sm ghost" type="button" data-act="addacct" data-acct="' + acct + '" aria-label="' + ACCT[acct] + ' 종목 추가">＋</button></div>';
     if (acct === 'dc') {
       html += '<div class="groupNote">항목 합계 ' + won(hs.reduce((a,h) => a + h.eval, 0)) + ' · 계좌 표시 ' + won(sum) + ' (차이 ' + won(fix.ev) + '은 전일 기준가·매매중). 항목별 손익 합이 앱 총 손익과 달라 계좌 카드는 KB 앱 표시값 기준이에요.</div>';
     }
@@ -1451,12 +1478,14 @@ function renderBuyLog(){
 function catOptions(sel){
   return CATS.map(c => '<option value="' + c.id + '"' + (c.id === sel ? ' selected' : '') + '>' + c.name + '</option>').join('');
 }
-function openEditModal(h){
+function openEditModal(h, opts){
+  opts = opts || {};
   const isNew = !h;
-  const cur = h || {id: '', name: '', acct: 'p1', cat: 'ndx', kind: 'etf', qty: 0, avg: 0, price: 0, buy: 0, eval: 0, ret: 9, div: 0, ratio: 0};
+  const defAcct = ACCT_ORDER.indexOf(opts.acct) >= 0 ? opts.acct : 'p1';
+  const cur = h || {id: '', name: '', acct: defAcct, cat: 'ndx', kind: defAcct === 'dc' ? 'fund' : 'etf', qty: 0, avg: 0, price: 0, buy: 0, eval: 0, ret: 9, div: 0, ratio: numOf(opts.ratio, 0)};
   const isFund = cur.kind === 'fund' || cur.acct === 'dc';
   const body =
-    '<div class="modalHead"><h3>' + (isNew ? '종목 추가' : '종목 수정') + '</h3><button class="x" type="button" data-close aria-label="닫기">×</button></div>' +
+    '<div class="modalHead"><h3>' + (isNew ? esc(ACCT[cur.acct] || '') + ' 종목 추가' : '종목 수정') + '</h3><button class="x" type="button" data-close aria-label="닫기">×</button></div>' +
     '<div class="modalBody">' +
       '<div class="field"><label>종목 이름</label><input class="inp" id="mName" value="' + esc(cur.name) + '" placeholder="예: TIGER 미국S&P500"></div>' +
       '<div class="formGrid">' +
@@ -1513,7 +1542,7 @@ function openEditModal(h){
     let qty = 0, avg = 0, price = 0, buy = 0, ev = 0;
     if (fund) {
       buy = r0(numEl('mBuy')); ev = r0(numEl('mEval'));
-      if (ev <= 0) { toast('평가금액을 확인해 주세요'); return; }
+      if (ev < 0 || (ev === 0 && !isNew)) { toast('평가금액을 확인해 주세요'); return; }
     } else {
       const q = numEl('mQty'), a = numEl('mAvg'), p = numEl('mPrice');
       if (q <= 0 || p <= 0) { toast('수량과 현재가를 확인해 주세요'); return; }
@@ -1525,9 +1554,20 @@ function openEditModal(h){
       qty: qty, avg: avg, price: price, buy: buy, eval: ev,
       ret: numEl('mRet'), div: numEl('mDiv'),
       ratio: fund ? Math.max(0, Math.min(100, numEl('mRatio'))) : 0,
-      monthly: isNew ? 0 : cur.monthly
+      monthly: isNew ? (fund ? 0 : Math.max(0, r0(numOf(opts.monthly, 0)))) : cur.monthly
     };
-    if (isNew) state.holdings.push(target);
+    if (isNew) {
+      /* 같은 계좌에 같은 이름의 종목이 이미 있으면 줄을 늘리지 않고 그 종목에 반영한다. */
+      const dup = state.holdings.filter(x => x.acct === target.acct && normName(x.name) === normName(target.name))[0];
+      if (dup) {
+        if (fund) dup.ratio = target.ratio;
+        if (target.monthly > 0) dup.monthly = target.monthly;
+        closeModal(); renderAll(); save();
+        toast('이미 있는 종목이라 기존 "' + dup.name + '"에 반영했어요');
+        return;
+      }
+      state.holdings.push(target);
+    }
     else {
       Object.assign(cur, target);
       /* DC·펀드 평가액을 직접 고쳤으면 그 값을 새 기준으로 삼는다. */
@@ -1540,7 +1580,10 @@ function openEditModal(h){
     closeModal();
     renderAll();
     save();
-    toast(isNew ? '종목을 추가했어요' : '수정했어요');
+    toast(isNew
+      ? ('종목을 추가했어요' + (target.monthly > 0 ? ' · 월 적립 ' + won(target.monthly)
+        : (fund && target.ratio > 0 ? ' · 자동매수 ' + target.ratio + '%' : '')))
+      : '수정했어요');
   });
   if (!isNew) {
     $('mDelete').addEventListener('click', () => {
@@ -1694,20 +1737,52 @@ function renderRetRows(){
   ).join('');
 }
 function renderAllocRows(){
-  const hs = state.holdings.filter(h => h.acct !== 'dc');
+  const all = state.holdings.filter(h => h.acct !== 'dc');
+  const hs = all.filter(h => (+h.monthly || 0) > 0);
   const total = hs.reduce((a,h) => a + (+h.monthly || 0), 0) || 1;
-  $('allocList').innerHTML = hs.map(h => {
+  $('allocList').innerHTML = hs.length ? hs.map(h => {
     const sh = (+h.monthly || 0) / total * 100;
     const c = CAT[h.cat] || CATS[0];
     return '<div class="allocRow">' +
       '<div class="an" title="' + esc(h.name) + '"><i style="color:' + c.color + '">●</i> ' + esc(h.name) + '</div>' +
       '<input class="inp num" inputmode="numeric" data-hid="' + h.id + '" data-k="monthly" value="' + fmt(h.monthly) + '" aria-label="' + esc(h.name) + ' 월 적립금">' +
-      '<div class="ash" id="ash_' + h.id + '">' + sh.toFixed(1) + '%</div></div>';
-  }).join('');
+      '<div class="ash" id="ash_' + h.id + '">' + sh.toFixed(1) + '%</div>' +
+      '<button class="rowX" type="button" data-delalloc="' + h.id + '" aria-label="' + esc(h.name) + ' 적립 목록에서 빼기" title="적립 목록에서 빼기">×</button></div>';
+  }).join('')
+    : '<div class="emptyBox">월 적립 중인 종목이 없어요. 아래 <b>＋ 적립 종목 추가</b>에서 종목을 고르세요.</div>';
+  renderAllocAdd(all);
   renderDcRows();
 }
+function renderAllocAdd(all){
+  const sel = $('allocAddSel');
+  if (!sel) return;
+  all = all || state.holdings.filter(h => h.acct !== 'dc');
+  const rest = all.filter(h => !(+h.monthly > 0));
+  let opts = '<option value="">＋ 적립 종목 추가…</option>';
+  ['p1','irp'].forEach(a => {
+    const items = rest.filter(h => h.acct === a);
+    if (!items.length) return;
+    opts += '<optgroup label="' + ACCT[a] + '">' + items.map(h => '<option value="' + h.id + '">' + esc(h.name) + '</option>').join('') + '</optgroup>';
+  });
+  sel.innerHTML = opts + '<option value="__new">＋ 새 종목 직접 추가</option>';
+  const hint = $('allocAddHint');
+  if (hint) hint.textContent = '연금저축·IRP ' + all.length + '종목 중 ' + (all.length - rest.length) + '종목 적립 중 · 뺀 종목은 여기서 다시 넣을 수 있어요';
+}
+function personalMonthlySum(){
+  return state.holdings.filter(h => h.acct !== 'dc').reduce((a,h) => a + (+h.monthly || 0), 0);
+}
+function defaultMonthlyAdd(){
+  const rest = Math.max(0, (+state.sim.target || 0) - personalMonthlySum());
+  const amt = rest > 0 ? Math.round(rest / 1000) * 1000 : 100000;
+  return Math.max(10000, amt);
+}
+function defaultDcRatio(){
+  const gap = 100 - dcRatioSum();
+  return gap > 0 ? gap : 10;
+}
 function renderDcRows(){
-  const hs = state.holdings.filter(h => h.acct === 'dc').slice().sort((a,b) => (+b.ratio||0) - (+a.ratio||0) || b.eval - a.eval);
+  const all = state.holdings.filter(h => h.acct === 'dc');
+  const hs = all.filter(h => (+h.ratio || 0) > 0).slice().sort((a,b) => (+b.ratio||0) - (+a.ratio||0) || b.eval - a.eval);
   const sum = dcRatioSum();
   const amt = Math.max(0, +state.sim.dcMonthly || 0);
   $('dcRatioList').innerHTML = hs.length
@@ -1716,10 +1791,23 @@ function renderDcRows(){
         const c = CAT[h.cat] || CATS[0];
         return '<div class="dcRow"><div class="an" title="' + esc(h.name) + '"><i style="color:' + c.color + '">●</i> ' + esc(h.name) + '</div>' +
           '<input class="inp num" inputmode="numeric" data-ratio="' + h.id + '" value="' + r + '" aria-label="' + esc(h.name) + ' 납입 비율">' +
-          '<div class="ash num" id="dcAmt_' + h.id + '">' + (r && sum ? won(amt * r / sum) : '—') + '</div></div>';
+          '<div class="ash num" id="dcAmt_' + h.id + '">' + (r && sum ? won(amt * r / sum) : '—') + '</div>' +
+          '<button class="rowX" type="button" data-deldc="' + h.id + '" aria-label="' + esc(h.name) + ' 자동매수에서 빼기" title="자동매수에서 빼기">×</button></div>';
       }).join('') + '</div>'
-    : '<div class="emptyBox">DC형 종목이 없습니다.</div>';
+    : '<div class="emptyBox">자동매수 중인 DC 종목이 없어요. 아래 <b>＋ DC 자동매수 종목 추가</b>에서 고르세요.</div>';
+  renderDcAdd(all);
   updateDcHint();
+}
+function renderDcAdd(all){
+  const sel = $('dcAddSel');
+  if (!sel) return;
+  all = all || state.holdings.filter(h => h.acct === 'dc');
+  const rest = all.filter(h => !(+h.ratio > 0));
+  let opts = '<option value="">＋ DC 자동매수 종목 추가…</option>';
+  if (rest.length) {
+    opts += '<optgroup label="DC 보유 종목">' + rest.map(h => '<option value="' + h.id + '">' + esc(h.name) + ' · ' + won(h.eval) + '</option>').join('') + '</optgroup>';
+  }
+  sel.innerHTML = opts + '<option value="__new">＋ 새 종목 직접 추가</option>';
 }
 function updateDcAmounts(){
   const sum = dcRatioSum();
@@ -1734,9 +1822,32 @@ function updateDcHint(){
   const sum = dcRatioSum();
   const amt = Math.max(0, +state.sim.dcMonthly || 0);
   $('dcMonthlyHint').textContent = amt ? '= ' + mixedWon(amt) + ' 원' : '';
-  $('dcHint').innerHTML = sum === 100
-    ? '비율 합계 <b>100%</b> · 월 ' + won(amt) + '이 정해진 비율로 자동 매수돼요. DC 회사납입금은 세액공제 대상이 아니에요.'
-    : '비율 합계가 <b>' + sum + '%</b>예요. 합계 기준으로 나눠 월 ' + won(amt) + '을 배분했습니다.(100%로 맞추면 그대로 적용)';
+  const badge = $('dcSumBadge');
+  if (badge) {
+    badge.textContent = '합계 ' + sum + '%';
+    badge.className = 'dcSum ' + (sum === 100 ? 'ok' : 'warn');
+  }
+  const fix = $('dcFixBtn');
+  if (fix) fix.style.display = (sum !== 100 && sum > 0) ? '' : 'none';
+  $('dcHint').innerHTML = !sum
+    ? '자동매수 중인 종목이 없어요. 아래에서 종목을 넣으면 회사납입금이 그 비율대로 매수돼요. DC 회사납입금은 세액공제 대상이 아니에요.'
+    : (sum === 100
+      ? '비율 합계 <b>100%</b> · 월 ' + won(amt) + '이 정해진 비율로 자동 매수돼요. DC 회사납입금은 세액공제 대상이 아니에요.'
+      : '비율 합계가 <b>' + sum + '%</b>예요. 지금은 합계 기준으로 나눠 월 ' + won(amt) + '을 배분했어요. <b>100%로 맞추기</b>를 누르면 지금 비율 그대로 100%가 됩니다.');
+}
+/* 비율 합계를 지금 비율 그대로 100%로 늘린다(최대잔여법으로 정수 보정). */
+function normalizeDcRatios(){
+  const hs = state.holdings.filter(h => h.acct === 'dc' && (+h.ratio || 0) > 0);
+  const sum = hs.reduce((a,h) => a + (+h.ratio || 0), 0);
+  if (!hs.length || sum === 100) return;
+  const raw = hs.map(h => (+h.ratio || 0) * 100 / sum);
+  const base = raw.map(v => Math.floor(v));
+  let diff = 100 - base.reduce((a,b) => a + b, 0);
+  const order = raw.map((v,i) => ({i: i, f: v - base[i]})).sort((a,b) => b.f - a.f);
+  for (let k = 0; k < diff; k++) base[order[k % order.length].i]++;
+  hs.forEach((h,i) => { h.ratio = base[i]; });
+  renderDcRows(); refresh(); save();
+  toast('비율 합계를 100%로 맞췄어요');
 }
 function updateAllocShares(){
   const hs = state.holdings.filter(h => h.acct !== 'dc');
@@ -2004,6 +2115,7 @@ function bind(){
   $('holdList').addEventListener('click', e => {
     const b = e.target.closest('button[data-act]');
     if (!b) return;
+    if (b.dataset.act === 'addacct') { openEditModal(null, {acct: b.dataset.acct}); return; }
     const h = state.holdings.filter(x => x.id === b.dataset.id)[0];
     if (!h) return;
     if (b.dataset.act === 'buy') openBuyModal(h);
@@ -2099,6 +2211,46 @@ function bind(){
     if (!h) return;
     h.ratio = Math.max(0, Math.min(100, Math.round(parseAmt(inp.value))));
     updateDcAmounts(); refresh(); save();
+  });
+  $('dcRatioList').addEventListener('click', e => {
+    const b = e.target.closest('button[data-deldc]');
+    if (!b) return;
+    const h = state.holdings.filter(x => x.id === b.dataset.deldc)[0];
+    if (!h) return;
+    h.ratio = 0;
+    renderDcRows(); refresh(); save();
+    toast('"' + h.name + '"을(를) 자동매수에서 뺐어요 · 종목은 그대로 있어요');
+  });
+  $('dcAddBtn').addEventListener('click', () => {
+    const sel = $('dcAddSel');
+    if (!sel || !sel.value) { toast('추가할 종목을 고르세요'); return; }
+    const ratio = defaultDcRatio();
+    if (sel.value === '__new') { openEditModal(null, {acct: 'dc', ratio: ratio}); return; }
+    const h = state.holdings.filter(x => x.id === sel.value)[0];
+    if (!h) return;
+    h.ratio = ratio;
+    renderDcRows(); refresh(); save();
+    toast('"' + h.name + '" ' + h.ratio + '%로 자동매수에 넣었어요');
+  });
+  $('dcFixBtn').addEventListener('click', normalizeDcRatios);
+  $('allocList').addEventListener('click', e => {
+    const b = e.target.closest('button[data-delalloc]');
+    if (!b) return;
+    const h = state.holdings.filter(x => x.id === b.dataset.delalloc)[0];
+    if (!h) return;
+    h.monthly = 0;
+    renderAllocRows(); refresh(); save();
+    toast('"' + h.name + '"을(를) 적립 목록에서 뺐어요 · 종목은 그대로 있어요');
+  });
+  $('allocAddBtn').addEventListener('click', () => {
+    const sel = $('allocAddSel');
+    if (!sel || !sel.value) { toast('추가할 종목을 고르세요'); return; }
+    if (sel.value === '__new') { openEditModal(null, {acct: 'p1', monthly: defaultMonthlyAdd()}); return; }
+    const h = state.holdings.filter(x => x.id === sel.value)[0];
+    if (!h) return;
+    h.monthly = defaultMonthlyAdd();
+    renderAllocRows(); refresh(); save();
+    toast('"' + h.name + '" 월 ' + won(h.monthly) + '을 넣었어요');
   });
   $('retRows').addEventListener('input', e => {
     const inp = e.target.closest('input[data-hid]');
