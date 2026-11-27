@@ -1,7 +1,7 @@
 {
-  "asOf": "2026-11-26",
+  "asOf": "2026-11-27",
   "phase": "장마감",
-  "label": "2026-11-26 장마감",
+  "label": "2026-11-27 장마감",
   "baseDate": "2026-11-16",
   "base": {
     "0015B0": 13945,
@@ -22,168 +22,168 @@
     "402970": 15520
   },
   "source": "naver-finance",
-  "generatedAt": "2026-11-26T16:16:00+09:00",
+  "generatedAt": "2026-11-27T16:13:33+09:00",
   "count": 16,
   "items": [
     {
       "code": "0015B0",
       "name": "KoAct 미국나스닥성장기업액티브",
-      "price": 12610,
-      "prevClose": 12465,
-      "change": 145,
-      "changeRate": 1.16,
+      "price": 12970,
+      "prevClose": 12610,
+      "change": 360,
+      "changeRate": 2.85,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:20+09:00"
+      "tradedAt": "2026-11-27T16:13:22+09:00"
     },
     {
       "code": "133690",
       "name": "TIGER 미국나스닥100",
-      "price": 155660,
-      "prevClose": 153760,
-      "change": 1900,
-      "changeRate": 1.24,
+      "price": 158625,
+      "prevClose": 155660,
+      "change": 2965,
+      "changeRate": 1.9,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:21+09:00"
+      "tradedAt": "2026-11-27T16:13:22+09:00"
     },
     {
       "code": "367380",
       "name": "ACE 미국나스닥100",
-      "price": 26770,
-      "prevClose": 26395,
-      "change": 375,
-      "changeRate": 1.42,
+      "price": 27265,
+      "prevClose": 26770,
+      "change": 495,
+      "changeRate": 1.85,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:21+09:00"
+      "tradedAt": "2026-11-27T16:13:21+09:00"
     },
     {
       "code": "446720",
       "name": "SOL 미국배당다우존스",
-      "price": 13745,
-      "prevClose": 13580,
-      "change": 165,
-      "changeRate": 1.22,
+      "price": 13705,
+      "prevClose": 13720,
+      "change": -15,
+      "changeRate": -0.11,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:20+09:00"
+      "tradedAt": "2026-11-27T16:13:22+09:00"
     },
     {
       "code": "458730",
       "name": "TIGER 미국배당다우존스",
-      "price": 15010,
-      "prevClose": 14850,
-      "change": 160,
-      "changeRate": 1.08,
+      "price": 14990,
+      "prevClose": 14980,
+      "change": 10,
+      "changeRate": 0.07,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:21+09:00"
+      "tradedAt": "2026-11-27T16:13:22+09:00"
     },
     {
       "code": "490090",
       "name": "TIGER 미국AI빅테크10",
-      "price": 13500,
-      "prevClose": 13455,
-      "change": 45,
-      "changeRate": 0.33,
+      "price": 13800,
+      "prevClose": 13500,
+      "change": 300,
+      "changeRate": 2.22,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:18+09:00"
+      "tradedAt": "2026-11-27T16:13:19+09:00"
     },
     {
       "code": "476030",
       "name": "SOL 미국나스닥100",
-      "price": 14760,
-      "prevClose": 14555,
-      "change": 205,
-      "changeRate": 1.41,
+      "price": 15025,
+      "prevClose": 14760,
+      "change": 265,
+      "changeRate": 1.8,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:20+09:00"
+      "tradedAt": "2026-11-27T16:13:21+09:00"
     },
     {
       "code": "490490",
       "name": "SOL 미국배당미국채혼합50",
-      "price": 10890,
-      "prevClose": 10850,
-      "change": 40,
-      "changeRate": 0.37,
+      "price": 10860,
+      "prevClose": 10890,
+      "change": -30,
+      "changeRate": -0.28,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:19+09:00"
+      "tradedAt": "2026-11-27T16:13:20+09:00"
     },
     {
       "code": "379810",
       "name": "KODEX 미국나스닥100",
-      "price": 23245,
-      "prevClose": 22935,
-      "change": 310,
-      "changeRate": 1.35,
+      "price": 23690,
+      "prevClose": 23245,
+      "change": 445,
+      "changeRate": 1.91,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:22+09:00"
+      "tradedAt": "2026-11-27T16:13:23+09:00"
     },
     {
       "code": "278530",
       "name": "KODEX 200TR",
-      "price": 26750,
-      "prevClose": 26545,
-      "change": 205,
-      "changeRate": 0.77,
+      "price": 27835,
+      "prevClose": 26750,
+      "change": 1085,
+      "changeRate": 4.06,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:21+09:00"
+      "tradedAt": "2026-11-27T16:13:23+09:00"
     },
     {
       "code": "229200",
       "name": "KODEX 코스닥150",
-      "price": 10850,
-      "prevClose": 10735,
-      "change": 115,
-      "changeRate": 1.07,
+      "price": 11925,
+      "prevClose": 10850,
+      "change": 1075,
+      "changeRate": 9.91,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:19+09:00"
+      "tradedAt": "2026-11-27T16:13:15+09:00"
     },
     {
       "code": "426030",
       "name": "TIME 미국나스닥100액티브",
-      "price": 33450,
-      "prevClose": 32965,
-      "change": 485,
-      "changeRate": 1.47,
+      "price": 34390,
+      "prevClose": 33450,
+      "change": 940,
+      "changeRate": 2.81,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:20+09:00"
+      "tradedAt": "2026-11-27T16:13:22+09:00"
     },
     {
       "code": "226490",
       "name": "KODEX 코스피",
-      "price": 48560,
-      "prevClose": 48460,
-      "change": 100,
-      "changeRate": 0.21,
+      "price": 50915,
+      "prevClose": 48560,
+      "change": 2355,
+      "changeRate": 4.85,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:20+09:00"
+      "tradedAt": "2026-11-27T16:13:21+09:00"
     },
     {
       "code": "0162Z0",
       "name": "RISE 삼성전자SK하이닉스채권혼합50",
-      "price": 10855,
-      "prevClose": 10770,
-      "change": 85,
-      "changeRate": 0.79,
+      "price": 11165,
+      "prevClose": 10855,
+      "change": 310,
+      "changeRate": 2.86,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:22+09:00"
+      "tradedAt": "2026-11-27T16:13:23+09:00"
     },
     {
       "code": "396500",
       "name": "TIGER 반도체TOP10",
-      "price": 22995,
-      "prevClose": 22590,
-      "change": 405,
-      "changeRate": 1.79,
+      "price": 24410,
+      "prevClose": 22995,
+      "change": 1415,
+      "changeRate": 6.15,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:21+09:00"
+      "tradedAt": "2026-11-27T16:13:22+09:00"
     },
     {
       "code": "402970",
       "name": "ACE 미국배당다우존스",
-      "price": 15240,
-      "prevClose": 15050,
-      "change": 190,
-      "changeRate": 1.26,
+      "price": 15235,
+      "prevClose": 15240,
+      "change": -5,
+      "changeRate": -0.03,
       "marketStatus": "CLOSE",
-      "tradedAt": "2026-11-26T16:15:18+09:00"
+      "tradedAt": "2026-11-27T16:13:19+09:00"
     }
   ]
 }
